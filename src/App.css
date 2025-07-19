@@ -1,0 +1,38 @@
+.container {
+  max-width: 900px;
+  margin: auto;
+  font-family: Arial;
+  padding: 20px;
+}
+.card {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin: 20px 0;
+  padding: 20px;
+}
+.card h2 {
+  margin-top: 0;
+}
+.card input,
+.card select,
+.card button {
+  margin: 8px;
+  padding: 8px;
+}
+.card ul {
+  list-style: none;
+  padding-left: 0;
+}
+.card li {
+  margin: 6px 0;
+}
+button {
+  cursor: pointer;
+}
+@media (max-width: 768px) {
+  .card input, .card select {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+}
+
