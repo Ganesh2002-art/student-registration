@@ -17,14 +17,13 @@ This project is a student registration system built using **React** only. It all
 
 ## 🚀 Live Demo
 
-👉 [Live Deployed App](https://your-deployment-url.netlify.app)  
-👉 [GitHub Repository](https://github.com/your-username/student-registration)
+👉 [Live Deployed App](https://cheery-buttercream-56a853.netlify.app)  
+👉 [GitHub Repository](https://github.com/Ganesh2002-art/student-registration)
 
 ## 📸 Screenshots
 
 | Course Types | Courses | Offerings | Student Registration |
 |--------------|---------|-----------|-----------------------|
-| ![Course Types](screenshots/types.png) | ![Courses](screenshots/courses.png) | ![Offerings](screenshots/offerings.png) | ![Registration](screenshots/registration.png) |
 
 *(Optional — include screenshots or Loom demo video)*
 
