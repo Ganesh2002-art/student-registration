@@ -12,80 +12,90 @@
         }
 
         :root {
-            /* Dark Theme Colors */
-            --primary-color: #3b82f6;
-            --primary-dark: #2563eb;
-            --primary-light: #60a5fa;
-            --secondary-color: #64748b;
-            --secondary-dark: #475569;
-            --accent-color: #06b6d4;
-            --success-color: #10b981;
-            --danger-color: #ef4444;
-            --warning-color: #f59e0b;
+            /* Default Light Theme Colors - Professional & Readable */
+            --primary-color: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #3b82f6;
+            --secondary-color: #6366f1;
+            --secondary-dark: #4f46e5;
+            --accent-color: #059669;
+            --accent-light: #10b981;
+            --success-color: #059669;
+            --danger-color: #dc2626;
+            --warning-color: #d97706;
+            --info-color: #0ea5e9;
             
-            /* Dark Theme Backgrounds */
-            --background-color: #0f172a;
-            --background-secondary: #1e293b;
-            --surface-color: #334155;
-            --surface-hover: #475569;
-            --card-background: #1e293b;
-            --sidebar-background: #0f172a;
+            /* Light Theme Backgrounds - Clean & Professional */
+            --background-color: #ffffff;
+            --background-secondary: #f8fafc;
+            --background-tertiary: #f1f5f9;
+            --surface-color: #ffffff;
+            --surface-hover: #f8fafc;
+            --card-background: #ffffff;
+            --sidebar-background: #fefefe;
             
-            /* Dark Theme Text */
-            --text-primary: #f8fafc;
-            --text-secondary: #cbd5e1;
-            --text-muted: #94a3b8;
+            /* Light Theme Text - High Contrast for Readability */
+            --text-primary: #0f172a;
+            --text-secondary: #334155;
+            --text-muted: #64748b;
+            --text-light: #94a3b8;
             
-            /* Dark Theme Borders */
-            --border-color: #374151;
-            --border-light: #4b5563;
+            /* Light Theme Borders - Subtle & Clean */
+            --border-color: #e2e8f0;
+            --border-light: #f1f5f9;
+            --border-dark: #cbd5e1;
             
             /* Layout */
             --sidebar-width: 280px;
             --header-height: 70px;
             
-            /* Shadows */
-            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.15);
-            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.2);
-            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.3);
-            --shadow-xl: 0 12px 48px rgba(0, 0, 0, 0.4);
+            /* Light Theme Shadows - Soft & Elegant */
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+            --shadow-md: 0 3px 6px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.12);
+            --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.15), 0 3px 6px rgba(0, 0, 0, 0.10);
+            --shadow-xl: 0 15px 35px rgba(0, 0, 0, 0.1), 0 5px 15px rgba(0, 0, 0, 0.07);
         }
 
-        /* Light Theme */
-        [data-theme="light"] {
-            /* Light Theme Colors */
-            --primary-color: #2563eb;
-            --primary-dark: #1d4ed8;
-            --primary-light: #3b82f6;
-            --secondary-color: #6b7280;
-            --secondary-dark: #4b5563;
-            --accent-color: #0891b2;
-            --success-color: #059669;
-            --danger-color: #dc2626;
-            --warning-color: #d97706;
+        /* Dark Theme - Modern & Eye-friendly */
+        [data-theme="dark"] {
+            /* Dark Theme Colors - Vibrant yet Professional */
+            --primary-color: #3b82f6;
+            --primary-dark: #2563eb;
+            --primary-light: #60a5fa;
+            --secondary-color: #8b5cf6;
+            --secondary-dark: #7c3aed;
+            --accent-color: #06b6d4;
+            --accent-light: #22d3ee;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --info-color: #06b6d4;
             
-            /* Light Theme Backgrounds */
-            --background-color: #f8fafc;
-            --background-secondary: #f1f5f9;
-            --surface-color: #ffffff;
-            --surface-hover: #f1f5f9;
-            --card-background: #ffffff;
-            --sidebar-background: #ffffff;
+            /* Dark Theme Backgrounds - Deep & Rich */
+            --background-color: #0f172a;
+            --background-secondary: #1e293b;
+            --background-tertiary: #334155;
+            --surface-color: #1e293b;
+            --surface-hover: #334155;
+            --card-background: #1e293b;
+            --sidebar-background: #0f172a;
             
-            /* Light Theme Text */
-            --text-primary: #1e293b;
-            --text-secondary: #475569;
-            --text-muted: #64748b;
+            /* Dark Theme Text - Comfortable for Dark Mode */
+            --text-primary: #f8fafc;
+            --text-secondary: #e2e8f0;
+            --text-muted: #94a3b8;
+            --text-light: #64748b;
             
-            /* Light Theme Borders */
-            --border-color: #e2e8f0;
-            --border-light: #cbd5e1;
+            /* Dark Theme Borders - Subtle in Dark Mode */
+            --border-color: #334155;
+            --border-light: #475569;
+            --border-dark: #1e293b;
             
-            /* Light Theme Shadows */
-            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.1);
-            --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.15);
-            --shadow-xl: 0 12px 24px rgba(0, 0, 0, 0.2);
+            /* Dark Theme Shadows - Deeper for Depth */
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+            --shadow-xl: 0 12px 48px rgba(0, 0, 0, 0.6);
         }
 
         body {
@@ -150,7 +160,20 @@
         .sidebar-header {
             padding: 2rem 1.5rem;
             border-bottom: 1px solid var(--border-color);
-            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            pointer-events: none;
         }
 
         .sidebar-header h1 {
@@ -192,9 +215,10 @@
         }
 
         .nav-link.active {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
             box-shadow: var(--shadow-md);
+            transform: translateX(8px);
         }
 
         .nav-link.active::before {
@@ -205,6 +229,7 @@
             bottom: 0;
             width: 4px;
             background: var(--accent-color);
+            border-radius: 0 2px 2px 0;
         }
 
         .nav-icon {
@@ -300,13 +325,15 @@
             width: 36px;
             height: 36px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-weight: 600;
             font-size: 1rem;
+            border: 2px solid var(--accent-color);
+            box-shadow: var(--shadow-sm);
         }
 
         /* Content Area Styles */
@@ -334,12 +361,25 @@
         .section-title {
             font-size: 2.25rem;
             font-weight: 800;
-            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
             letter-spacing: -0.02em;
             margin-bottom: 0.5rem;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: var(--accent-color);
+            border-radius: 2px;
         }
 
         .section-subtitle {
@@ -369,9 +409,21 @@
 
         .card-header {
             padding: 1.5rem;
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
             border-bottom: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--accent-color);
         }
 
         .card-title {
@@ -402,15 +454,17 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
             box-shadow: var(--shadow-sm);
+            border: 1px solid transparent;
         }
 
         .btn-primary:hover {
-            background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
+            background: linear-gradient(135deg, var(--primary-dark), var(--secondary-dark));
             transform: translateY(-2px);
             box-shadow: var(--shadow-md);
+            border-color: var(--accent-color);
         }
 
         .btn-secondary {
@@ -474,12 +528,23 @@
         }
 
         .table th {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
             font-weight: 600;
             text-transform: uppercase;
             font-size: 0.8rem;
             letter-spacing: 0.05em;
+            position: relative;
+        }
+
+        .table th::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: var(--accent-color);
         }
 
         .table tbody tr:hover {
@@ -587,10 +652,24 @@
         .modal-title {
             font-size: 1.75rem;
             font-weight: 700;
-            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        .modal-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 2px;
+            background: var(--accent-color);
+            border-radius: 1px;
         }
 
         .modal-actions {
@@ -667,7 +746,17 @@
             left: 0;
             width: 100%;
             height: 4px;
-            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        }
+
+        .metric-card::after {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: var(--accent-color);
         }
 
         .metric-card:hover {
@@ -1202,7 +1291,7 @@
         // Global variables
         let currentSection = 'users';
         let sidebarOpen = false;
-        let currentTheme = 'dark';
+        let currentTheme = 'light';
 
         // DOM elements
         const sidebar = document.getElementById('sidebar');
@@ -1230,14 +1319,14 @@
         }
 
         function toggleTheme() {
-            currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
             applyTheme(currentTheme);
             saveTheme(currentTheme);
         }
 
         function applyTheme(theme) {
-            if (theme === 'light') {
-                document.documentElement.setAttribute('data-theme', 'light');
+            if (theme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
                 sunIcon.classList.add('hidden');
                 moonIcon.classList.remove('hidden');
             } else {
@@ -1252,7 +1341,7 @@
         }
 
         function loadTheme() {
-            const savedTheme = localStorage.getItem('admin-theme') || 'dark';
+            const savedTheme = localStorage.getItem('admin-theme') || 'light';
             currentTheme = savedTheme;
             applyTheme(currentTheme);
         }
