@@ -1,0 +1,2300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Admin Control Panel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Dark Theme Colors - Enhanced for better accessibility */
+            --primary-color: #3b82f6;
+            --primary-dark: #2563eb;
+            --primary-light: #60a5fa;
+            --secondary-color: #64748b;
+            --secondary-dark: #475569;
+            --accent-color: #06b6d4;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            
+            /* Dark Theme Backgrounds - Improved contrast */
+            --background-color: #0f172a;
+            --background-secondary: #1e293b;
+            --surface-color: #334155;
+            --surface-hover: #475569;
+            --card-background: #1e293b;
+            --sidebar-background: #0f172a;
+            
+            /* Dark Theme Text - Better contrast ratios */
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            
+            /* Dark Theme Borders */
+            --border-color: #374151;
+            --border-light: #4b5563;
+            
+            /* Layout - More flexible for responsive design */
+            --sidebar-width: 280px;
+            --sidebar-width-collapsed: 0px;
+            --header-height: 70px;
+            
+            /* Enhanced Shadows */
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.15);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.2);
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --shadow-xl: 0 12px 48px rgba(0, 0, 0, 0.4);
+            
+            /* Focus styles for accessibility */
+            --focus-ring: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+
+        /* Light Theme - Enhanced */
+        [data-theme="light"] {
+            --primary-color: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #3b82f6;
+            --secondary-color: #6b7280;
+            --secondary-dark: #4b5563;
+            --accent-color: #0891b2;
+            --success-color: #059669;
+            --danger-color: #dc2626;
+            --warning-color: #d97706;
+            
+            --background-color: #f8fafc;
+            --background-secondary: #f1f5f9;
+            --surface-color: #ffffff;
+            --surface-hover: #f1f5f9;
+            --card-background: #ffffff;
+            --sidebar-background: #ffffff;
+            
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            
+            --border-color: #e2e8f0;
+            --border-light: #cbd5e1;
+            
+            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.15);
+            --shadow-xl: 0 12px 24px rgba(0, 0, 0, 0.2);
+            
+            --focus-ring: 0 0 0 3px rgba(37, 99, 235, 0.2);
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--background-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+            font-size: 1rem;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Focus styles for accessibility */
+        *:focus-visible {
+            outline: none;
+            box-shadow: var(--focus-ring);
+        }
+
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Enhanced Theme Toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1001;
+            background: var(--surface-color);
+            border: 2px solid var(--border-color);
+            border-radius: 50px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-lg);
+            background: var(--surface-hover);
+        }
+
+        .theme-toggle svg {
+            width: 20px;
+            height: 20px;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        /* Enhanced Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--sidebar-background);
+            border-right: 1px solid var(--border-color);
+            position: fixed;
+            height: 100vh;
+            z-index: 1000;
+            transform: translateX(0);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-y: auto;
+            box-shadow: var(--shadow-md);
+        }
+
+        .sidebar.collapsed {
+            transform: translateX(-100%);
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .sidebar-header h1 {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .sidebar-header p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.875rem;
+        }
+
+        .sidebar-nav {
+            padding: 1rem 0;
+        }
+
+        .nav-item {
+            margin: 0.25rem 0;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            position: relative;
+            border-radius: 0 25px 25px 0;
+            margin-right: 1rem;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            background-color: var(--surface-hover);
+            color: var(--text-primary);
+            transform: translateX(8px);
+        }
+
+        .nav-link:focus-visible {
+            background-color: var(--surface-hover);
+            color: var(--text-primary);
+        }
+
+        .nav-link.active {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            color: white;
+            box-shadow: var(--shadow-md);
+            font-weight: 600;
+        }
+
+        .nav-link.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--accent-color);
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            opacity: 0.8;
+            flex-shrink: 0;
+        }
+
+        /* Enhanced Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            background: var(--background-secondary);
+        }
+
+        .main-content.expanded {
+            margin-left: 0;
+        }
+
+        /* Enhanced Header */
+        .main-header {
+            background: var(--surface-color);
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-primary);
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .menu-toggle:hover {
+            background: var(--surface-hover);
+        }
+
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        /* Enhanced User Profile */
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1.25rem;
+            background: var(--background-secondary);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .user-profile:hover {
+            background: var(--surface-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        /* Enhanced Content Area */
+        .content-area {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            animation: fadeIn 0.5s ease;
+            width: 100%;
+        }
+
+        .section {
+            display: none;
+            animation: slideIn 0.4s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .section-header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .section-title {
+            font-size: 2.25rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Enhanced Card Styles */
+        .card {
+            background: var(--card-background);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            animation: cardFadeIn 0.6s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-color);
+        }
+
+        .card-header {
+            padding: 1.5rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            color: white;
+            border-bottom: none;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+        }
+
+        .card-content {
+            padding: 2rem;
+        }
+
+        /* Enhanced Button Styles */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+            position: relative;
+            overflow: hidden;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            color: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-secondary {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: var(--secondary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover:not(:disabled) {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            border-radius: 8px;
+        }
+
+        /* Enhanced Table Styles */
+        .table-container {
+            overflow-x: auto;
+            border-radius: 12px;
+            background: var(--card-background);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            min-width: 600px;
+        }
+
+        .table th,
+        .table td {
+            padding: 1rem 1.5rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .table th {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.05em;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .table tbody tr:hover {
+            background: var(--surface-hover);
+        }
+
+        .table tbody tr:nth-child(even) {
+            background: var(--background-secondary);
+        }
+
+        .table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Enhanced Form Styles */
+        .form {
+            display: grid;
+            gap: 1.5rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            display: grid;
+            gap: 0.5rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+
+        .form-input,
+        .form-select {
+            padding: 0.875rem 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            background: var(--surface-color);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .form-input:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: var(--focus-ring);
+            background: var(--card-background);
+        }
+
+        .form-input[type="file"] {
+            padding: 0.5rem;
+            border: 2px dashed var(--border-color);
+            background: transparent;
+        }
+
+        .form-input[type="file"]::file-selector-button {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            background: var(--primary-color);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-right: 1rem;
+            font-family: inherit;
+        }
+
+        .form-input[type="file"]::file-selector-button:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Enhanced Modal Styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            animation: fadeIn 0.3s ease;
+            backdrop-filter: blur(4px);
+            padding: 1rem;
+        }
+
+        .modal-content {
+            background: var(--card-background);
+            border-radius: 16px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-xl);
+            border: 1px solid var(--border-color);
+            animation: slideUp 0.4s ease;
+        }
+
+        .modal-header {
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .modal-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* Enhanced Notification Styles */
+        .notification {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-weight: 500;
+            font-size: 1rem;
+            z-index: 3000;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+            backdrop-filter: blur(10px);
+            animation: popupIn 0.4s ease forwards;
+        }
+
+        .notification-success {
+            background: var(--card-background);
+            border: 2px solid var(--success-color);
+        }
+
+        .notification-error {
+            background: var(--card-background);
+            border: 2px solid var(--danger-color);
+        }
+
+        .notification-warning {
+            background: var(--card-background);
+            border: 2px solid var(--warning-color);
+        }
+
+        .notification-info {
+            background: var(--card-background);
+            border: 2px solid var(--primary-color);
+        }
+
+        /* Enhanced Metrics Cards */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: var(--card-background);
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            animation: cardFadeIn 0.6s ease;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        }
+
+        .metric-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+            animation: pulseValue 1s ease-out;
+        }
+
+        .metric-label {
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Enhanced Status Indicators */
+        .status {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            display: inline-flex;
+            align-items: center;
+            letter-spacing: 0.05em;
+        }
+
+        .status-success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .status-warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning-color);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .status-error {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger-color);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        /* Enhanced Chart Container */
+        .chart-container {
+            position: relative;
+            height: 350px;
+            background: var(--card-background);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .chart-container p {
+            font-size: 1rem;
+            color: var(--text-muted);
+            text-align: center;
+            max-width: 80%;
+        }
+
+        /* Enhanced Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes cardFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(15px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes pulseValue {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes popupIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        @keyframes popupOut {
+            from {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+            to {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.9);
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--accent-color);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Enhanced Responsive Design */
+        @media (max-width: 1200px) {
+            .content-area {
+                padding: 1.5rem;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            }
+        }
+
+        @media (max-width: 1024px) {
+            :root {
+                --sidebar-width: 0px;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .theme-toggle {
+                top: 15px;
+                right: 15px;
+                padding: 10px;
+            }
+            
+            .main-header {
+                padding: 0 1.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .content-area {
+                padding: 1rem;
+            }
+
+            .section-title {
+                font-size: 1.75rem;
+            }
+
+            .section-header {
+                text-align: left;
+                margin-bottom: 1.5rem;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .card-content {
+                padding: 1.5rem;
+            }
+
+            .form {
+                gap: 1.25rem;
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 1.5rem;
+                margin: 1rem;
+            }
+
+            .table-container {
+                margin: 0 -1rem;
+                width: calc(100% + 2rem);
+                border-radius: 0;
+            }
+
+            .table th,
+            .table td {
+                padding: 0.75rem;
+                font-size: 0.9rem;
+            }
+
+            .notification {
+                max-width: 90%;
+                padding: 1rem;
+                font-size: 0.9rem;
+            }
+            
+            .main-header {
+                padding: 0 1rem;
+            }
+            
+            .page-title {
+                font-size: 1.5rem;
+            }
+            
+            .user-profile span {
+                display: none;
+            }
+            
+            .modal-actions {
+                flex-direction: column;
+            }
+            
+            .btn {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .content-area {
+                padding: 0.75rem;
+            }
+            
+            .section-title {
+                font-size: 1.5rem;
+            }
+
+            .card-header {
+                padding: 1.25rem;
+            }
+
+            .card-title {
+                font-size: 1.25rem;
+            }
+
+            .btn {
+                padding: 0.625rem 1.25rem;
+                font-size: 0.85rem;
+            }
+
+            .btn-sm {
+                padding: 0.5rem 0.875rem;
+                font-size: 0.8rem;
+            }
+
+            .modal-title {
+                font-size: 1.5rem;
+            }
+
+            .metric-value {
+                font-size: 2rem;
+            }
+
+            .notification {
+                padding: 0.875rem;
+                font-size: 0.85rem;
+            }
+            
+            .theme-toggle {
+                top: 10px;
+                right: 10px;
+                padding: 8px;
+            }
+            
+            .theme-toggle svg {
+                width: 18px;
+                height: 18px;
+            }
+            
+            .main-header {
+                height: 60px;
+                padding: 0 0.75rem;
+            }
+            
+            .user-avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            .sidebar,
+            .theme-toggle,
+            .menu-toggle {
+                display: none !important;
+            }
+            
+            .main-content {
+                margin-left: 0 !important;
+            }
+            
+            .card {
+                break-inside: avoid;
+                box-shadow: none;
+                border: 1px solid #000;
+            }
+        }
+
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+            :root {
+                --border-color: #000;
+                --text-primary: #000;
+                --background-color: #fff;
+            }
+            
+            [data-theme="light"] {
+                --border-color: #000;
+                --text-primary: #000;
+            }
+        }
+
+        /* Reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Utility Classes */
+        .hidden { display: none !important; }
+        .sr-only { 
+            position: absolute; 
+            width: 1px; 
+            height: 1px; 
+            padding: 0; 
+            margin: -1px; 
+            overflow: hidden; 
+            clip: rect(0, 0, 0, 0); 
+            white-space: nowrap; 
+            border: 0; 
+        }
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .mt-1 { margin-top: 0.5rem; }
+        .mt-2 { margin-top: 1rem; }
+        .mb-1 { margin-bottom: 0.5rem; }
+        .mb-2 { margin-bottom: 1rem; }
+        .flex { display: flex; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .gap-2 { gap: 1rem; }
+    </style>
+</head>
+<body>
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" id="themeToggle" title="Toggle theme" aria-label="Toggle between light and dark theme">
+        <svg id="sunIcon" width="20" height="20" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z"/>
+        </svg>
+        <svg id="moonIcon" class="hidden" width="20" height="20" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M9.528 1.718a.75.75 0 01.162.819A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 003.463-.69.75.75 0 01.981.98 10.503 10.503 0 01-9.694 6.46c-5.799 0-10.5-4.701-10.5-10.5 0-4.368 2.667-8.112 6.46-9.694a.75.75 0 01.818.162z"/>
+        </svg>
+    </button>
+
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar" role="navigation" aria-label="Main navigation">
+            <div class="sidebar-header">
+                <h1>Super Admin</h1>
+                <p>Control Panel v2.0</p>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-item">
+                    <a href="#" class="nav-link active" data-section="users" role="menuitem">
+                        <svg class="nav-icon" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                        </svg>
+                        Manage Users
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" data-section="import" role="menuitem">
+                        <svg class="nav-icon" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"/>
+                        </svg>
+                        Import Data
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" data-section="logs" role="menuitem">
+                        <svg class="nav-icon" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+                        </svg>
+                        Audit Logs
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" data-section="analytics" role="menuitem">
+                        <svg class="nav-icon" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"/>
+                        </svg>
+                        Analytics
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content" id="mainContent" role="main">
+            <!-- Header -->
+            <header class="main-header">
+                <div class="header-left">
+                    <button class="menu-toggle" id="menuToggle" aria-label="Toggle sidebar menu">
+                        <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+                        </svg>
+                    </button>
+                    <h1 class="page-title" id="pageTitle">Manage Users</h1>
+                </div>
+                <div class="header-right">
+                    <div class="user-profile" tabindex="0" role="button" aria-label="User profile menu">
+                        <div class="user-avatar" aria-hidden="true">SA</div>
+                        <span>Super Admin</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Users Section -->
+                <section id="users" class="section active" role="tabpanel" aria-labelledby="users-title">
+                    <div class="section-header">
+                        <h2 class="section-title" id="users-title">User Management</h2>
+                        <p class="section-subtitle">Manage system users and their permissions with enhanced security controls</p>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="flex items-center justify-between">
+                                <h3 class="card-title">System Users</h3>
+                                <button class="btn btn-primary" id="create-user">
+                                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                                    </svg>
+                                    Create New User
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="table-container">
+                                <table class="table" id="users-table" role="table" aria-label="System users table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">ID</th>
+                                            <th scope="col">Username</th>
+                                            <th scope="col">Email</th>
+                                            <th scope="col">Role</th>
+                                            <th scope="col">Status</th>
+                                            <th scope="col">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Import Section -->
+                <section id="import" class="section" role="tabpanel" aria-labelledby="import-title">
+                    <div class="section-header">
+                        <h2 class="section-title" id="import-title">Data Import</h2>
+                        <p class="section-subtitle">Import candidate data from various sources with enhanced validation and error handling</p>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Import Candidate Data</h3>
+                        </div>
+                        <div class="card-content">
+                            <form id="import-form" class="form" novalidate>
+                                <div class="form-group">
+                                    <label class="form-label" for="file-upload">Choose file (CSV, Excel, or Text):</label>
+                                    <input type="file" id="file-upload" class="form-input" accept=".csv,.xlsx,.xls,.txt" required aria-describedby="file-help">
+                                    <small id="file-help" class="sr-only">Supported formats: CSV, Excel (.xlsx, .xls), or Text (.txt)</small>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="source">Source:</label>
+                                    <select id="source" class="form-select" required aria-describedby="source-help">
+                                        <option value="">Select a source</option>
+                                        <option value="naukri">Naukri</option>
+                                        <option value="linkedin">LinkedIn</option>
+                                        <option value="indeed">Indeed</option>
+                                    </select>
+                                    <small id="source-help" class="sr-only">Select the platform where the data originated</small>
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"/>
+                                    </svg>
+                                    <span class="loading hidden" aria-hidden="true"></span>
+                                    Import Data
+                                </button>
+                            </form>
+                            <div id="import-status" class="mt-2" role="status" aria-live="polite"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Logs Section -->
+                <section id="logs" class="section" role="tabpanel" aria-labelledby="logs-title">
+                    <div class="section-header">
+                        <h2 class="section-title" id="logs-title">Audit Logs</h2>
+                        <p class="section-subtitle">Monitor system activities and user actions with advanced filtering and search capabilities</p>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="flex items-center justify-between">
+                                <h3 class="card-title">System Activity Logs</h3>
+                                <div class="flex items-center gap-2">
+                                    <label for="date-from" class="sr-only">Filter from date</label>
+                                    <input type="date" id="date-from" class="form-input" aria-label="Filter from date">
+                                    <span aria-hidden="true">to</span>
+                                    <label for="date-to" class="sr-only">Filter to date</label>
+                                    <input type="date" id="date-to" class="form-input" aria-label="Filter to date">
+                                    <button id="filter-logs" class="btn btn-secondary">
+                                        <span class="loading hidden" aria-hidden="true"></span>
+                                        Filter
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="table-container">
+                                <table class="table" id="logs-table" role="table" aria-label="System activity logs">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Timestamp</th>
+                                            <th scope="col">User</th>
+                                            <th scope="col">Action</th>
+                                            <th scope="col">Details</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Analytics Section -->
+                <section id="analytics" class="section" role="tabpanel" aria-labelledby="analytics-title">
+                    <div class="section-header">
+                        <h2 class="section-title" id="analytics-title">System Analytics</h2>
+                        <p class="section-subtitle">Comprehensive overview of system performance, usage metrics, and key insights</p>
+                    </div>
+
+                    <div class="metrics-grid">
+                        <div class="metric-card" id="total-users">
+                            <div class="metric-value" aria-label="Total users count">0</div>
+                            <div class="metric-label">Total Users</div>
+                        </div>
+                        <div class="metric-card" id="active-users">
+                            <div class="metric-value" aria-label="Active users count">0</div>
+                            <div class="metric-label">Active Users</div>
+                        </div>
+                        <div class="metric-card" id="total-candidates">
+                            <div class="metric-value" aria-label="Total candidates count">0</div>
+                            <div class="metric-label">Total Candidates</div>
+                        </div>
+                        <div class="metric-card" id="imports-last-30-days">
+                            <div class="metric-value" aria-label="Imports in last 30 days">0</div>
+                            <div class="metric-label">Imports (Last 30 Days)</div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Performance Overview</h3>
+                        </div>
+                        <div class="card-content">
+                            <div id="chart-container" class="chart-container" role="img" aria-label="Performance charts placeholder">
+                                <div>
+                                    <svg width="64" height="64" fill="var(--accent-color)" viewBox="0 0 24 24" style="margin-bottom: 1rem;" aria-hidden="true">
+                                        <path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"/>
+                                    </svg>
+                                    <p>📊 Charts will be rendered here when connected to real data</p>
+                                    <p style="font-size: 0.875rem; opacity: 0.7;">Connect your analytics service to see detailed charts and graphs</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Global variables
+        let currentSection = 'users';
+        let sidebarOpen = false;
+        let currentTheme = localStorage.getItem('admin-theme') || 'dark';
+
+        // DOM elements
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+        const menuToggle = document.getElementById('menuToggle');
+        const pageTitle = document.getElementById('pageTitle');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const sections = document.querySelectorAll('.section');
+        const themeToggle = document.getElementById('themeToggle');
+        const sunIcon = document.getElementById('sunIcon');
+        const moonIcon = document.getElementById('moonIcon');
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeEventListeners();
+            setupResponsiveMenu();
+            setupThemeToggle();
+            loadTheme();
+            showSection('users');
+            
+            // Add keyboard navigation support
+            setupKeyboardNavigation();
+        });
+
+        // Enhanced Theme Management
+        function setupThemeToggle() {
+            themeToggle.addEventListener('click', toggleTheme);
+            themeToggle.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    toggleTheme();
+                }
+            });
+        }
+
+        function toggleTheme() {
+            currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            applyTheme(currentTheme);
+            saveTheme(currentTheme);
+            
+            // Announce theme change to screen readers
+            const announcement = currentTheme === 'light' ? 'Switched to light theme' : 'Switched to dark theme';
+            announceToScreenReader(announcement);
+        }
+
+        function applyTheme(theme) {
+            if (theme === 'light') {
+                document.documentElement.setAttribute('data-theme', 'light');
+                sunIcon.classList.add('hidden');
+                moonIcon.classList.remove('hidden');
+                themeToggle.setAttribute('aria-label', 'Switch to dark theme');
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
+                themeToggle.setAttribute('aria-label', 'Switch to light theme');
+            }
+        }
+
+        function saveTheme(theme) {
+            localStorage.setItem('admin-theme', theme);
+        }
+
+        function loadTheme() {
+            applyTheme(currentTheme);
+        }
+
+        // Enhanced Event Listeners
+        function initializeEventListeners() {
+            // Navigation links
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const section = this.getAttribute('data-section');
+                    showSection(section);
+                    if (window.innerWidth <= 1024) {
+                        toggleSidebar(false);
+                    }
+                });
+                
+                // Keyboard navigation for nav links
+                link.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        this.click();
+                    }
+                });
+            });
+
+            // Menu toggle
+            menuToggle.addEventListener('click', function() {
+                toggleSidebar();
+            });
+
+            // Close modals and notifications when clicking outside or pressing Escape
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('modal')) {
+                    closeModal(e.target);
+                }
+                if (e.target.classList.contains('notification')) {
+                    closeNotification(e.target);
+                }
+            });
+
+            // Keyboard event listeners
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    const modal = document.querySelector('.modal');
+                    if (modal) {
+                        closeModal(modal);
+                    }
+                    const notification = document.querySelector('.notification');
+                    if (notification) {
+                        closeNotification(notification);
+                    }
+                }
+            });
+
+            // Handle window resize
+            window.addEventListener('resize', debounce(setupResponsiveMenu, 250));
+        }
+
+        // Enhanced Keyboard Navigation
+        function setupKeyboardNavigation() {
+            // Trap focus in modals
+            document.addEventListener('keydown', function(e) {
+                const modal = document.querySelector('.modal');
+                if (modal && e.key === 'Tab') {
+                    trapFocus(modal, e);
+                }
+            });
+        }
+
+        function trapFocus(element, event) {
+            const focusableElements = element.querySelectorAll(
+                'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+            );
+            const firstElement = focusableElements[0];
+            const lastElement = focusableElements[focusableElements.length - 1];
+
+            if (event.shiftKey) {
+                if (document.activeElement === firstElement) {
+                    lastElement.focus();
+                    event.preventDefault();
+                }
+            } else {
+                if (document.activeElement === lastElement) {
+                    firstElement.focus();
+                    event.preventDefault();
+                }
+            }
+        }
+
+        // Enhanced responsive menu setup
+        function setupResponsiveMenu() {
+            if (window.innerWidth <= 1024) {
+                sidebar.classList.add('collapsed');
+                mainContent.classList.add('expanded');
+                sidebarOpen = false;
+            } else {
+                sidebar.classList.remove('collapsed', 'open');
+                mainContent.classList.remove('expanded');
+                sidebarOpen = true;
+            }
+        }
+
+        // Enhanced sidebar toggle
+        function toggleSidebar(force = null) {
+            if (window.innerWidth <= 1024) {
+                sidebarOpen = force !== null ? force : !sidebarOpen;
+                sidebar.classList.toggle('open', sidebarOpen);
+                sidebar.classList.toggle('collapsed', !sidebarOpen);
+                mainContent.classList.toggle('expanded', !sidebarOpen);
+                
+                // Update ARIA attributes
+                sidebar.setAttribute('aria-hidden', !sidebarOpen);
+                menuToggle.setAttribute('aria-expanded', sidebarOpen);
+                
+                // Focus management
+                if (sidebarOpen) {
+                    const firstNavLink = sidebar.querySelector('.nav-link');
+                    if (firstNavLink) firstNavLink.focus();
+                }
+            }
+        }
+
+        // Enhanced section showing
+        function showSection(sectionId) {
+            navLinks.forEach(link => {
+                const isActive = link.getAttribute('data-section') === sectionId;
+                link.classList.toggle('active', isActive);
+                link.setAttribute('aria-current', isActive ? 'page' : 'false');
+            });
+
+            sections.forEach(section => {
+                const isActive = section.id === sectionId;
+                section.classList.toggle('active', isActive);
+                section.setAttribute('aria-hidden', !isActive);
+            });
+
+            const titles = {
+                'users': 'Manage Users',
+                'import': 'Import Data',
+                'logs': 'Audit Logs',
+                'analytics': 'Analytics'
+            };
+            pageTitle.textContent = titles[sectionId] || 'Admin Panel';
+
+            if (currentSection !== sectionId) {
+                currentSection = sectionId;
+                loadSectionContent(sectionId);
+                
+                // Announce section change
+                announceToScreenReader(`Switched to ${titles[sectionId]} section`);
+            }
+        }
+
+        // Load section content with enhanced error handling
+        function loadSectionContent(sectionId) {
+            try {
+                switch(sectionId) {
+                    case 'users':
+                        loadUsers();
+                        break;
+                    case 'import':
+                        setupImportForm();
+                        break;
+                    case 'logs':
+                        loadLogs();
+                        break;
+                    case 'analytics':
+                        loadAnalytics();
+                        break;
+                    default:
+                        console.warn(`Unknown section: ${sectionId}`);
+                }
+            } catch (error) {
+                console.error(`Error loading section ${sectionId}:`, error);
+                showNotification(`Failed to load ${sectionId} section`, 'error');
+            }
+        }
+
+        // Enhanced User Management Functions
+        function loadUsers() {
+            const tableBody = document.querySelector('#users-table tbody');
+            setLoadingState(tableBody, 'Loading users...');
+
+            fetch('/api/users', {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            })
+                .then(response => {
+                    if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                    return response.json();
+                })
+                .then(users => {
+                    tableBody.innerHTML = '';
+                    if (!Array.isArray(users) || users.length === 0) {
+                        tableBody.innerHTML = '<tr><td colspan="6" class="text-center">No users found</td></tr>';
+                        return;
+                    }
+                    
+                    users.forEach((user, index) => {
+                        const statusClass = user.active ? 'status-success' : 'status-warning';
+                        const statusText = user.active ? 'Active' : 'Inactive';
+                        const actionText = user.active ? 'Deactivate' : 'Activate';
+                        
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${escapeHtml(user.id)}</td>
+                            <td>${escapeHtml(user.username)}</td>
+                            <td>${escapeHtml(user.email)}</td>
+                            <td>${escapeHtml(user.role)}</td>
+                            <td><span class="status ${statusClass}">${statusText}</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-secondary edit-btn" data-id="${user.id}" aria-label="Edit user ${user.username}">Edit</button>
+                                <button class="btn btn-sm btn-danger deactivate-btn" data-id="${user.id}" aria-label="${actionText} user ${user.username}">
+                                    ${actionText}
+                                </button>
+                            </td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+
+                    // Add event listeners for buttons
+                    attachUserActionListeners();
+                })
+                .catch(error => {
+                    console.error('Error loading users:', error);
+                    setErrorState(tableBody, `Failed to load users: ${error.message}`);
+                    showNotification(`Failed to load users: ${error.message}`, 'error');
+                });
+
+            // Add create user button listener
+            const createBtn = document.getElementById('create-user');
+            if (createBtn && !createBtn.dataset.initialized) {
+                createBtn.addEventListener('click', createUserModal);
+                createBtn.dataset.initialized = 'true';
+            }
+        }
+
+        function attachUserActionListeners() {
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', () => editUser(btn.dataset.id));
+            });
+            document.querySelectorAll('.deactivate-btn').forEach(btn => {
+                btn.addEventListener('click', () => deactivateUser(btn.dataset.id));
+            });
+        }
+
+        // Enhanced modal creation with better accessibility
+        function createUserModal() {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.setAttribute('role', 'dialog');
+            modal.setAttribute('aria-labelledby', 'modal-title');
+            modal.setAttribute('aria-modal', 'true');
+            
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="modal-title" id="modal-title">Create New User</h2>
+                    </div>
+                    <form id="create-user-form" class="form" novalidate>
+                        <div class="form-group">
+                            <label class="form-label" for="username">Username:</label>
+                            <input type="text" id="username" class="form-input" required minlength="3" maxlength="50">
+                            <div class="error-message" id="username-error" role="alert"></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="email">Email:</label>
+                            <input type="email" id="email" class="form-input" required>
+                            <div class="error-message" id="email-error" role="alert"></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="role">Role:</label>
+                            <select id="role" class="form-select" required>
+                                <option value="">Select Role</option>
+                                <option value="ADMIN">Admin</option>
+                                <option value="USER">User</option>
+                            </select>
+                            <div class="error-message" id="role-error" role="alert"></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="password">Password:</label>
+                            <input type="password" id="password" class="form-input" required minlength="8">
+                            <div class="error-message" id="password-error" role="alert"></div>
+                        </div>
+                        <div class="modal-actions">
+                            <button type="button" class="btn btn-secondary cancel-btn">Cancel</button>
+                            <button type="submit" class="btn btn-primary">
+                                <span class="loading hidden" aria-hidden="true"></span>
+                                Create User
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            document.body.appendChild(modal);
+
+            const form = modal.querySelector('#create-user-form');
+            const cancelBtn = modal.querySelector('.cancel-btn');
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const loading = submitBtn.querySelector('.loading');
+
+            // Focus the first input
+            setTimeout(() => {
+                const firstInput = form.querySelector('#username');
+                if (firstInput) firstInput.focus();
+            }, 100);
+
+            cancelBtn.addEventListener('click', () => closeModal(modal));
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                if (!validateForm(form)) {
+                    return;
+                }
+                
+                setButtonLoading(submitBtn, loading, true);
+
+                const userData = {
+                    username: form.querySelector('#username').value.trim(),
+                    email: form.querySelector('#email').value.trim(),
+                    role: form.querySelector('#role').value,
+                    password: form.querySelector('#password').value
+                };
+
+                try {
+                    const response = await fetch('/api/users', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(userData)
+                    });
+                    
+                    if (!response.ok) {
+                        const error = await response.json();
+                        throw new Error(error.message || 'Failed to create user');
+                    }
+                    
+                    showNotification('User created successfully!', 'success');
+                    closeModal(modal);
+                    loadUsers();
+                } catch (error) {
+                    console.error('Error creating user:', error);
+                    showNotification(`Failed to create user: ${error.message}`, 'error');
+                } finally {
+                    setButtonLoading(submitBtn, loading, false);
+                }
+            });
+        }
+
+        // Enhanced edit user function
+        async function editUser(id) {
+            try {
+                const response = await fetch(`/api/users/${id}`, {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                if (!response.ok) throw new Error('Failed to fetch user data');
+                const userData = await response.json();
+
+                const modal = document.createElement('div');
+                modal.className = 'modal';
+                modal.setAttribute('role', 'dialog');
+                modal.setAttribute('aria-labelledby', 'edit-modal-title');
+                modal.setAttribute('aria-modal', 'true');
+                
+                modal.innerHTML = `
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h2 class="modal-title" id="edit-modal-title">Edit User</h2>
+                        </div>
+                        <form id="edit-user-form" class="form" novalidate>
+                            <div class="form-group">
+                                <label class="form-label" for="edit-username">Username:</label>
+                                <input type="text" id="edit-username" class="form-input" value="${escapeHtml(userData.username)}" required minlength="3" maxlength="50">
+                                <div class="error-message" id="edit-username-error" role="alert"></div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="edit-email">Email:</label>
+                                <input type="email" id="edit-email" class="form-input" value="${escapeHtml(userData.email)}" required>
+                                <div class="error-message" id="edit-email-error" role="alert"></div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="edit-role">Role:</label>
+                                <select id="edit-role" class="form-select" required>
+                                    <option value="ADMIN" ${userData.role === 'ADMIN' ? 'selected' : ''}>Admin</option>
+                                    <option value="USER" ${userData.role === 'USER' ? 'selected' : ''}>User</option>
+                                </select>
+                                <div class="error-message" id="edit-role-error" role="alert"></div>
+                            </div>
+                            <div class="modal-actions">
+                                <button type="button" class="btn btn-secondary cancel-btn">Cancel</button>
+                                <button type="submit" class="btn btn-primary">
+                                    <span class="loading hidden" aria-hidden="true"></span>
+                                    Update User
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+
+                const form = modal.querySelector('#edit-user-form');
+                const cancelBtn = modal.querySelector('.cancel-btn');
+                const submitBtn = form.querySelector('button[type="submit"]');
+                const loading = submitBtn.querySelector('.loading');
+
+                // Focus the first input
+                setTimeout(() => {
+                    const firstInput = form.querySelector('#edit-username');
+                    if (firstInput) firstInput.focus();
+                }, 100);
+
+                cancelBtn.addEventListener('click', () => closeModal(modal));
+
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    
+                    if (!validateForm(form)) {
+                        return;
+                    }
+                    
+                    setButtonLoading(submitBtn, loading, true);
+
+                    const updateData = {
+                        username: form.querySelector('#edit-username').value.trim(),
+                        email: form.querySelector('#edit-email').value.trim(),
+                        role: form.querySelector('#edit-role').value
+                    };
+
+                    try {
+                        const response = await fetch(`/api/users/${id}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(updateData)
+                        });
+                        
+                        if (!response.ok) {
+                            const error = await response.json();
+                            throw new Error(error.message || 'Failed to update user');
+                        }
+                        
+                        showNotification('User updated successfully!', 'success');
+                        closeModal(modal);
+                        loadUsers();
+                    } catch (error) {
+                        console.error('Error updating user:', error);
+                        showNotification(`Failed to update user: ${error.message}`, 'error');
+                    } finally {
+                        setButtonLoading(submitBtn, loading, false);
+                    }
+                });
+            } catch (error) {
+                console.error('Error fetching user:', error);
+                showNotification(`Failed to load user data: ${error.message}`, 'error');
+            }
+        }
+
+        // Enhanced deactivate user function
+        async function deactivateUser(id) {
+            const btn = document.querySelector(`.deactivate-btn[data-id="${id}"]`);
+            const action = btn.textContent.trim();
+            
+            if (!confirm(`Are you sure you want to ${action.toLowerCase()} this user?`)) {
+                return;
+            }
+
+            const originalText = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = 'Processing...';
+
+            try {
+                const response = await fetch(`/api/users/${id}/deactivate`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.message || 'Failed to update user status');
+                }
+                
+                showNotification(`User ${action.toLowerCase()}d successfully!`, 'success');
+                loadUsers();
+            } catch (error) {
+                console.error('Error updating user status:', error);
+                showNotification(`Failed to update user status: ${error.message}`, 'error');
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        // Enhanced Import Functions
+        function setupImportForm() {
+            const form = document.getElementById('import-form');
+            if (form && !form.dataset.initialized) {
+                form.addEventListener('submit', handleImport);
+                form.dataset.initialized = 'true';
+                
+                // Add file validation
+                const fileInput = document.getElementById('file-upload');
+                fileInput.addEventListener('change', validateFileInput);
+            }
+        }
+
+        function validateFileInput(e) {
+            const file = e.target.files[0];
+            const statusDiv = document.getElementById('import-status');
+            
+            if (!file) return;
+            
+            const validExtensions = ['.csv', '.xlsx', '.xls', '.txt'];
+            const fileExtension = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
+            const maxSize = 10 * 1024 * 1024; // 10MB
+            
+            if (!validExtensions.includes(fileExtension)) {
+                statusDiv.innerHTML = '<div class="status status-error">Only CSV, Excel (.xlsx, .xls), or Text (.txt) files are allowed.</div>';
+                e.target.value = '';
+                return;
+            }
+            
+            if (file.size > maxSize) {
+                statusDiv.innerHTML = '<div class="status status-error">File size must be less than 10MB.</div>';
+                e.target.value = '';
+                return;
+            }
+            
+            statusDiv.innerHTML = '';
+        }
+
+        async function handleImport(e) {
+            e.preventDefault();
+
+            const fileInput = document.getElementById('file-upload');
+            const source = document.getElementById('source').value;
+            const file = fileInput.files[0];
+            const statusDiv = document.getElementById('import-status');
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const loading = submitBtn.querySelector('.loading');
+
+            // Clear previous status
+            statusDiv.innerHTML = '';
+
+            if (!validateImportForm(file, source, statusDiv)) {
+                return;
+            }
+
+            setButtonLoading(submitBtn, loading, true);
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('source', source);
+
+            try {
+                const response = await fetch('http://localhost:8000/api/candidates/import', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const responseData = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(responseData.message || `HTTP error! Status: ${response.status}`);
+                }
+
+                statusDiv.innerHTML = `<div class="status status-success">Import successful! ${responseData.importedCount || 0} candidates imported from ${source}.</div>`;
+                e.target.reset();
+                showNotification(`Candidates imported successfully! ${responseData.importedCount || 0} candidates added.`, 'success');
+                
+                // Announce success to screen readers
+                announceToScreenReader(`Import completed successfully. ${responseData.importedCount || 0} candidates imported.`);
+            } catch (error) {
+                console.error('Error importing data:', error);
+                statusDiv.innerHTML = `<div class="status status-error">Failed to import data: ${error.message}</div>`;
+                showNotification(`Failed to import data: ${error.message}`, 'error');
+            } finally {
+                setButtonLoading(submitBtn, loading, false);
+            }
+        }
+
+        function validateImportForm(file, source, statusDiv) {
+            if (!file || !source) {
+                statusDiv.innerHTML = '<div class="status status-error">Please select both a file and source before importing.</div>';
+                return false;
+            }
+
+            const validExtensions = ['.csv', '.xlsx', '.xls', '.txt'];
+            const fileExtension = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
+            
+            if (!validExtensions.includes(fileExtension)) {
+                statusDiv.innerHTML = '<div class="status status-error">Only CSV, Excel (.xlsx, .xls), or Text (.txt) files are allowed.</div>';
+                return false;
+            }
+
+            return true;
+        }
+
+        // Enhanced Logs Functions
+        function loadLogs() {
+            const filterBtn = document.getElementById('filter-logs');
+            if (filterBtn && !filterBtn.dataset.initialized) {
+                filterBtn.addEventListener('click', fetchLogs);
+                filterBtn.dataset.initialized = 'true';
+                
+                // Set default date range (last 7 days)
+                const today = new Date();
+                const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+                document.getElementById('date-to').value = today.toISOString().split('T')[0];
+                document.getElementById('date-from').value = weekAgo.toISOString().split('T')[0];
+            }
+            fetchLogs();
+        }
+
+        async function fetchLogs() {
+            const dateFrom = document.getElementById('date-from').value;
+            const dateTo = document.getElementById('date-to').value;
+            const tableBody = document.querySelector('#logs-table tbody');
+            const filterBtn = document.getElementById('filter-logs');
+            const loading = filterBtn.querySelector('.loading');
+
+            const formattedFrom = dateFrom ? `${dateFrom}T00:00:00` : null;
+            const formattedTo = dateTo ? `${dateTo}T23:59:59` : null;
+            const queryParams = [];
+            
+            if (formattedFrom) queryParams.push(`from=${encodeURIComponent(formattedFrom)}`);
+            if (formattedTo) queryParams.push(`to=${encodeURIComponent(formattedTo)}`);
+            const queryString = queryParams.length > 0 ? `?${queryParams.join('&')}` : '';
+
+            setLoadingState(tableBody, 'Loading logs...');
+            setButtonLoading(filterBtn, loading, true);
+
+            try {
+                const response = await fetch(`/api/audit-logs${queryString}`, {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.message || `HTTP error! Status: ${response.status}`);
+                }
+                
+                const logs = await response.json();
+                tableBody.innerHTML = '';
+
+                if (!Array.isArray(logs) || logs.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="4" class="text-center">No logs found for the selected date range</td></tr>';
+                    return;
+                }
+
+                logs.forEach(log => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${new Date(log.timestamp).toLocaleString()}</td>
+                        <td>${escapeHtml(log.user)}</td>
+                        <td><span class="status status-success">${escapeHtml(log.action)}</span></td>
+                        <td>${escapeHtml(log.details)}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+                
+                announceToScreenReader(`Loaded ${logs.length} log entries`);
+            } catch (error) {
+                console.error('Error fetching logs:', error);
+                setErrorState(tableBody, `Failed to load logs: ${error.message}`);
+                showNotification(`Failed to load logs: ${error.message}`, 'error');
+            } finally {
+                setButtonLoading(filterBtn, loading, false);
+            }
+        }
+
+        // Enhanced Analytics Functions
+        async function loadAnalytics() {
+            const chartContainer = document.getElementById('chart-container');
+            chartContainer.innerHTML = '<div class="text-center"><div class="loading"></div> Loading analytics...</div>';
+
+            try {
+                const response = await fetch('/api/analytics', {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                if (!response.ok) throw new Error('Failed to load analytics data');
+                const data = await response.json();
+                updateMetricCards(data);
+                renderCharts(data);
+                announceToScreenReader('Analytics data loaded successfully');
+            } catch (error) {
+                console.error('Error loading analytics:', error);
+                chartContainer.innerHTML = `<div class="text-center status status-error">Error: ${error.message}</div>`;
+                showNotification(`Failed to load analytics: ${error.message}`, 'error');
+            }
+        }
+
+        function updateMetricCards(data) {
+            const cards = [
+                { id: 'total-users', value: data.totalUsers || 0, label: 'Total Users' },
+                { id: 'active-users', value: data.activeUsers || 0, label: 'Active Users' },
+                { id: 'total-candidates', value: data.totalCandidates ? data.totalCandidates.toLocaleString() : 0, label: 'Total Candidates' },
+                { id: 'imports-last-30-days', value: data.importsLast30Days ? data.importsLast30Days.toLocaleString() : 0, label: 'Imports (Last 30 Days)' }
+            ];
+
+            cards.forEach(card => {
+                const element = document.getElementById(card.id);
+                if (element) {
+                    const valueElement = element.querySelector('.metric-value');
+                    if (valueElement) {
+                        animateValue(valueElement, 0, parseInt(card.value.toString().replace(/,/g, '')) || 0, 1000);
+                        valueElement.setAttribute('aria-label', `${card.label}: ${card.value}`);
+                    }
+                }
+            });
+        }
+
+        function animateValue(element, start, end, duration) {
+            const startTime = performance.now();
+            const animate = (currentTime) => {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const current = Math.floor(start + (end - start) * progress);
+                element.textContent = current.toLocaleString();
+                
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                }
+            };
+            requestAnimationFrame(animate);
+        }
+
+        function renderCharts(data) {
+            const chartContainer = document.getElementById('chart-container');
+            chartContainer.innerHTML = `
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--text-muted);">
+                    <svg width="64" height="64" fill="var(--accent-color)" viewBox="0 0 24 24" style="margin-bottom: 1rem;" aria-hidden="true">
+                        <path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"/>
+                    </svg>
+                    <p>📊 Charts will be rendered here when connected to real data</p>
+                    <p style="font-size: 0.875rem; opacity: 0.7;">Connect your analytics service to see detailed charts and graphs</p>
+                </div>
+            `;
+        }
+
+        // Enhanced Utility Functions
+        function showNotification(message, type = 'info') {
+            // Remove any existing notifications to prevent overlap
+            document.querySelectorAll('.notification').forEach(n => closeNotification(n));
+
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.textContent = message;
+            notification.setAttribute('role', 'alert');
+            notification.setAttribute('aria-live', 'assertive');
+
+            document.body.appendChild(notification);
+
+            // Auto-close after 4 seconds
+            setTimeout(() => {
+                closeNotification(notification);
+            }, 4000);
+        }
+
+        function closeModal(modal) {
+            modal.style.animation = 'popupOut 0.3s ease forwards';
+            setTimeout(() => modal.remove(), 300);
+            
+            // Return focus to the trigger element if possible
+            const createBtn = document.getElementById('create-user');
+            if (createBtn) createBtn.focus();
+        }
+
+        function closeNotification(notification) {
+            notification.style.animation = 'popupOut 0.3s ease forwards';
+            setTimeout(() => notification.remove(), 300);
+        }
+
+        function setLoadingState(tableBody, message) {
+            tableBody.innerHTML = `<tr><td colspan="6" class="text-center"><div class="loading"></div> ${message}</td></tr>`;
+        }
+
+        function setErrorState(tableBody, message) {
+            tableBody.innerHTML = `<tr><td colspan="6" class="text-center status status-error">${message}</td></tr>`;
+        }
+
+        function setButtonLoading(button, loadingElement, isLoading) {
+            button.disabled = isLoading;
+            if (loadingElement) {
+                loadingElement.classList.toggle('hidden', !isLoading);
+            }
+        }
+
+        function validateForm(form) {
+            const inputs = form.querySelectorAll('input[required], select[required]');
+            let isValid = true;
+
+            inputs.forEach(input => {
+                const errorElement = form.querySelector(`#${input.id}-error`);
+                let error = '';
+
+                if (!input.value.trim()) {
+                    error = 'This field is required';
+                    isValid = false;
+                } else if (input.type === 'email' && !isValidEmail(input.value)) {
+                    error = 'Please enter a valid email address';
+                    isValid = false;
+                } else if (input.minLength && input.value.length < input.minLength) {
+                    error = `Minimum length is ${input.minLength} characters`;
+                    isValid = false;
+                }
+
+                if (errorElement) {
+                    errorElement.textContent = error;
+                    errorElement.style.color = error ? 'var(--danger-color)' : '';
+                }
+
+                input.classList.toggle('error', !!error);
+                input.setAttribute('aria-invalid', !!error);
+            });
+
+            return isValid;
+        }
+
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        function announceToScreenReader(message) {
+            const announcement = document.createElement('div');
+            announcement.setAttribute('aria-live', 'polite');
+            announcement.setAttribute('aria-atomic', 'true');
+            announcement.className = 'sr-only';
+            announcement.textContent = message;
+            document.body.appendChild(announcement);
+            
+            setTimeout(() => {
+                document.body.removeChild(announcement);
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
