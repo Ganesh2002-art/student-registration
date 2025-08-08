@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Super Admin Control Panel</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            /* Refined Dark Theme - high contrast, accessible */
+            --primary-color: #4f46e5;        /* indigo-600 */
+            --primary-dark: #4338ca;         /* indigo-700 */
+            --primary-light: #818cf8;        /* indigo-400 */
+            --secondary-color: #64748b;      /* slate-500 */
+            --secondary-dark: #475569;       /* slate-600 */
+            --accent-color: #06b6d4;         /* cyan-500 */
+            --success-color: #22c55e;        /* green-500 */
+            --danger-color: #ef4444;         /* red-500 */
+            --warning-color: #f59e0b;        /* amber-500 */
+
+            --background-color: #0b1220;     /* deep midnight */
+            --background-secondary: #0f172a; /* slate-900 */
+            --surface-color: #111827;        /* gray-900 */
+            --surface-hover: #1f2937;        /* gray-800 */
+            --card-background: #0f172a;      /* slate-900 */
+            --sidebar-background: #0b1220;   
+
+            --text-primary: #f8fafc;         /* gray-50 */
+            --text-secondary: #e2e8f0;       /* gray-200 */
+            --text-muted: #94a3b8;           /* slate-400 */
+
+            --border-color: #334155;         /* slate-700 */
+            --border-light: #475569;         /* slate-600 */
+
+            --sidebar-width: 280px;
+            --sidebar-width-collapsed: 0px;
+            --header-height: 70px;
+
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.25);
+            --shadow-md: 0 6px 18px rgba(0, 0, 0, 0.3);
+            --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.35);
+            --shadow-xl: 0 18px 48px rgba(0, 0, 0, 0.4);
+
+            --focus-ring: 0 0 0 3px rgba(99, 102, 241, 0.45); /* indigo */
+        }
+
+        /* Light Theme - crisp and balanced */
+        [data-theme="light"] {
+            --primary-color: #4f46e5;        /* indigo-600 */
+            --primary-dark: #4338ca;         /* indigo-700 */
+            --primary-light: #6366f1;        /* indigo-500 */
+            --secondary-color: #475569;      /* slate-600 */
+            --secondary-dark: #334155;       /* slate-700 */
+            --accent-color: #0891b2;         /* cyan-600 */
+            --success-color: #16a34a;        /* green-600 */
+            --danger-color: #dc2626;         /* red-600 */
+            --warning-color: #d97706;        /* amber-600 */
+
+            --background-color: #f8fafc;     /* slate-50 */
+            --background-secondary: #f1f5f9; /* slate-100 */
+            --surface-color: #ffffff;
+            --surface-hover: #f8fafc;
+            --card-background: #ffffff;
+            --sidebar-background: #ffffff;
+
+            --text-primary: #0f172a;         /* slate-900 */
+            --text-secondary: #334155;       /* slate-700 */
+            --text-muted: #64748b;           /* slate-500 */
+
+            --border-color: #e2e8f0;         /* slate-200 */
+            --border-light: #cbd5e1;         /* slate-300 */
+
+            --shadow-sm: 0 2px 6px rgba(15, 23, 42, 0.06);
+            --shadow-md: 0 6px 14px rgba(15, 23, 42, 0.08);
+            --shadow-lg: 0 12px 24px rgba(15, 23, 42, 0.10);
+            --shadow-xl: 0 18px 36px rgba(15, 23, 42, 0.12);
+
+            --focus-ring: 0 0 0 3px rgba(79, 70, 229, 0.25);
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--background-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+            font-size: 1rem;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        *:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+
+        .admin-container { display: flex; min-height: 100vh; position: relative; }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: fixed; top: 20px; right: 20px; z-index: 1001;
+            background: var(--surface-color);
+            border: 2px solid var(--border-color);
+            border-radius: 50px;
+            padding: 12px; cursor: pointer; transition: all 0.25s ease;
+            box-shadow: var(--shadow-md); display: flex; align-items: center; justify-content: center;
+        }
+        .theme-toggle:hover { transform: translateY(-1px); box-shadow: var(--shadow-lg); background: var(--surface-hover); }
+        .theme-toggle svg { width: 20px; height: 20px; color: var(--text-primary); transition: opacity 0.2s ease, transform 0.2s ease; }
+        .theme-toggle .icon { position: absolute; }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width); background: var(--sidebar-background);
+            border-right: 1px solid var(--border-color);
+            position: fixed; height: 100vh; z-index: 1000; transform: translateX(0);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-y: auto; box-shadow: var(--shadow-md);
+        }
+        .sidebar.collapsed { transform: translateX(-100%); }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem; border-bottom: 1px solid var(--border-color);
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color)); position: sticky; top: 0; z-index: 10;
+        }
+        .sidebar-header h1 { color: #fff; font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; letter-spacing: -0.02em; }
+        .sidebar-header p { color: rgba(255, 255, 255, 0.9); font-size: 0.9rem; }
+
+        .sidebar-nav { padding: 1rem 0; }
+        .nav-item { margin: 0.25rem 0; }
+        .nav-link { display: flex; align-items: center; padding: 1rem 1.5rem; color: var(--text-secondary); text-decoration: none; transition: all 0.2s ease; position: relative; border-radius: 0 25px 25px 0; margin-right: 1rem; font-weight: 600; }
+        .nav-link:hover, .nav-link:focus-visible { background-color: var(--surface-hover); color: var(--text-primary); transform: translateX(6px); }
+        .nav-link.active { background: linear-gradient(135deg, var(--primary-color), var(--primary-light)); color: #fff; box-shadow: var(--shadow-md); }
+        .nav-link.active::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--accent-color); }
+        .nav-icon { width: 20px; height: 20px; margin-right: 12px; opacity: 0.9; flex-shrink: 0; }
+
+        /* Main */
+        .main-content { flex: 1; margin-left: var(--sidebar-width); min-height: 100vh; transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative; background: var(--background-secondary); }
+        .main-content.expanded { margin-left: 0; }
+
+        /* Header */
+        .main-header { background: var(--surface-color); height: var(--header-height); display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; border-bottom: 1px solid var(--border-color); box-shadow: var(--shadow-sm); position: sticky; top: 0; z-index: 100; backdrop-filter: blur(10px); }
+        .header-left { display: flex; align-items: center; gap: 1rem; }
+        .menu-toggle { display: none; background: none; border: 1px solid var(--border-color); font-size: 1.5rem; cursor: pointer; color: var(--text-primary); padding: 0.5rem; border-radius: 10px; transition: all 0.2s ease; }
+        .menu-toggle:hover { background: var(--surface-hover); }
+        .page-title { font-size: 1.75rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.02em; }
+        .header-right { display: flex; align-items: center; gap: 1rem; }
+
+        /* User Profile */
+        .user-profile { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1.25rem; background: var(--background-secondary); border-radius: 12px; border: 1px solid var(--border-color); transition: all 0.3s ease; cursor: pointer; }
+        .user-profile:hover { background: var(--surface-hover); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+        .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-color), var(--accent-color)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1rem; flex-shrink: 0; }
+
+        /* Content */
+        .content-area { padding: 2rem; max-width: 1400px; margin: 0 auto; animation: fadeIn 0.4s ease; width: 100%; }
+        .section { display: none; animation: slideIn 0.3s ease; }
+        .section.active { display: block; }
+        .section-header { margin-bottom: 2rem; text-align: center; }
+        .section-title { font-size: 2.25rem; font-weight: 900; background: linear-gradient(135deg, var(--primary-color), var(--accent-color)); -webkit-background-clip: text; background-clip: text; color: transparent; letter-spacing: -0.02em; margin-bottom: 0.5rem; }
+        .section-subtitle { color: var(--text-muted); font-size: 1.05rem; max-width: 700px; margin: 0.25rem auto 0; }
+
+        /* Card */
+        .card { background: var(--card-background); border-radius: 16px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); transition: all 0.3s ease; position: relative; overflow: hidden; animation: cardFadeIn 0.45s ease; }
+        .card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); border-color: var(--primary-color); }
+        .card-header { padding: 1.25rem 1.5rem; background: linear-gradient(135deg, var(--primary-color), var(--primary-light)); color: white; border-bottom: none; }
+        .card-title { font-size: 1.25rem; font-weight: 800; letter-spacing: -0.01em; }
+        .card-content { padding: 1.75rem; }
+
+        /* Buttons */
+        .btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.7rem 1.2rem; border: none; border-radius: 10px; font-weight: 700; text-decoration: none; cursor: pointer; transition: transform 0.15s ease, background 0.2s ease, box-shadow 0.2s ease; font-size: 0.92rem; position: relative; overflow: hidden; font-family: inherit; white-space: nowrap; }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none !important; }
+        .btn-primary { background: linear-gradient(135deg, var(--primary-color), var(--primary-light)); color: white; box-shadow: var(--shadow-sm); }
+        .btn-primary:hover:not(:disabled) { background: linear-gradient(135deg, var(--primary-dark), var(--primary-color)); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+        .btn-secondary { background: var(--secondary-color); color: white; }
+        .btn-secondary:hover:not(:disabled) { background: var(--secondary-dark); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+        .btn-success { background: var(--success-color); color: white; }
+        .btn-success:hover:not(:disabled) { filter: brightness(0.95); transform: translateY(-1px); }
+        .btn-danger { background: var(--danger-color); color: white; }
+        .btn-danger:hover:not(:disabled) { filter: brightness(0.95); transform: translateY(-1px); }
+        .btn-sm { padding: 0.5rem 0.9rem; font-size: 0.85rem; border-radius: 8px; }
+
+        /* Tables */
+        .table-container { overflow-x: auto; border-radius: 12px; background: var(--card-background); border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); }
+        .table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 700px; }
+        .table th, .table td { padding: 1rem 1.25rem; text-align: left; border-bottom: 1px solid var(--border-color); color: var(--text-primary); }
+        .table th { background: linear-gradient(135deg, var(--primary-color), var(--primary-light)); color: white; font-weight: 700; text-transform: uppercase; font-size: 0.78rem; letter-spacing: 0.05em; position: sticky; top: 0; z-index: 10; }
+        .table tbody tr:hover { background: var(--surface-hover); }
+        .table tbody tr:nth-child(even) { background: rgba(148, 163, 184, 0.06); }
+        .table tbody tr:last-child td { border-bottom: none; }
+
+        /* Pagination */
+        .pagination-container { display: flex; justify-content: space-between; align-items: center; margin-top: 1.25rem; padding: 1rem; background: var(--surface-color); border-radius: 10px; border: 1px solid var(--border-color); flex-wrap: wrap; gap: 1rem; }
+        .pagination-info { color: var(--text-secondary); font-size: 0.9rem; font-weight: 600; }
+        .pagination-controls { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+        .pagination-controls .btn { padding: 0.5rem 1rem; font-size: 0.85rem; min-width: 80px; }
+        .pagination-pages { display: flex; align-items: center; gap: 0.25rem; margin: 0 0.5rem; }
+        .page-number { padding: 0.5rem 0.75rem; border: 1px solid var(--border-color); background: var(--surface-color); color: var(--text-primary); cursor: pointer; border-radius: 6px; font-size: 0.85rem; transition: all 0.2s ease; min-width: 40px; text-align: center; }
+        .page-number:hover { background: var(--surface-hover); border-color: var(--primary-color); }
+        .page-number.active { background: var(--primary-color); color: white; border-color: var(--primary-color); }
+        .pagination-size { display: flex; align-items: center; gap: 0.5rem; }
+        .pagination-size label { color: var(--text-secondary); font-size: 0.9rem; font-weight: 600; }
+        .pagination-size select { padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 6px; background: var(--surface-color); color: var(--text-primary); font-size: 0.85rem; }
+
+        /* Loading */
+        .loading-overlay { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.12); display: flex; align-items: center; justify-content: center; z-index: 10; border-radius: 10px; }
+        .loading-spinner { width: 40px; height: 40px; border: 4px solid var(--border-color); border-top: 4px solid var(--primary-color); border-radius: 50%; animation: spin 1s linear infinite; }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Forms */
+        .form { display: grid; gap: 1.25rem; max-width: 640px; margin: 0 auto; }
+        .form-group { display: grid; gap: 0.5rem; }
+        .form-label { font-weight: 700; color: var(--text-primary); font-size: 0.92rem; }
+        .form-input, .form-select { padding: 0.8rem 1rem; border: 2px solid var(--border-color); border-radius: 10px; background: var(--surface-color); color: var(--text-primary); font-size: 0.92rem; transition: all 0.2s ease; font-family: inherit; }
+        .form-input:focus, .form-select:focus { outline: none; border-color: var(--primary-color); box-shadow: var(--focus-ring); background: var(--card-background); }
+        .form-input[type="file"] { padding: 0.5rem; border: 2px dashed var(--border-color); background: transparent; }
+        .form-input[type="file"]::file-selector-button { padding: 0.5rem 1rem; border: none; border-radius: 6px; background: var(--primary-color); color: white; font-weight: 700; cursor: pointer; transition: filter 0.2s ease; margin-right: 1rem; font-family: inherit; }
+        .form-input[type="file"]::file-selector-button:hover { filter: brightness(0.95); }
+
+        /* Modal */
+        .modal { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); display: flex; align-items: center; justify-content: center; z-index: 2000; animation: fadeIn 0.25s ease; backdrop-filter: blur(4px); padding: 1rem; }
+        .modal-content { background: var(--card-background); border-radius: 16px; padding: 2rem; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-xl); border: 1px solid var(--border-color); animation: slideUp 0.35s ease; }
+        .modal-header { margin-bottom: 1.25rem; text-align: center; }
+        .modal-title { font-size: 1.7rem; font-weight: 800; background: linear-gradient(135deg, var(--primary-color), var(--accent-color)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .modal-actions { display: flex; gap: 1rem; margin-top: 1.5rem; justify-content: center; flex-wrap: wrap; }
+
+        /* Notifications */
+        .notification { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 1rem 1.25rem; border-radius: 10px; color: var(--text-primary); font-weight: 600; font-size: 0.96rem; z-index: 3000; max-width: 420px; width: 92%; text-align: center; box-shadow: var(--shadow-lg); backdrop-filter: blur(10px); animation: popupIn 0.3s ease forwards; }
+        .notification-success { background: var(--card-background); border: 2px solid var(--success-color); }
+        .notification-error { background: var(--card-background); border: 2px solid var(--danger-color); }
+        .notification-warning { background: var(--card-background); border: 2px solid var(--warning-color); }
+        .notification-info { background: var(--card-background); border: 2px solid var(--primary-color); }
+
+        /* Metrics */
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem; }
+        .metric-card { background: var(--card-background); border-radius: 16px; padding: 1.5rem; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); transition: all 0.3s ease; position: relative; overflow: hidden; animation: cardFadeIn 0.45s ease; }
+        .metric-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(135deg, var(--primary-color), var(--accent-color)); }
+        .metric-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+        .metric-value { font-size: 2.25rem; font-weight: 900; color: var(--primary-light); margin-bottom: 0.25rem; letter-spacing: -0.02em; animation: pulseValue 0.6s ease-out; }
+        .metric-label { color: var(--text-muted); font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; }
+
+        /* Status */
+        .status { padding: 0.45rem 0.9rem; border-radius: 20px; font-size: 0.78rem; font-weight: 800; text-transform: uppercase; display: inline-flex; align-items: center; letter-spacing: 0.05em; }
+        .status-success { background: rgba(34, 197, 94, 0.12); color: var(--success-color); border: 1px solid rgba(34, 197, 94, 0.25); }
+        .status-warning { background: rgba(245, 158, 11, 0.12); color: var(--warning-color); border: 1px solid rgba(245, 158, 11, 0.25); }
+        .status-error { background: rgba(239, 68, 68, 0.12); color: var(--danger-color); border: 1px solid rgba(239, 68, 68, 0.25); }
+
+        /* Charts */
+        .chart-container { position: relative; height: 360px; background: var(--card-background); border-radius: 12px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .chart-container p { font-size: 1rem; color: var(--text-muted); text-align: center; max-width: 80%; }
+
+        /* Animations */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(22px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        @keyframes cardFadeIn { from { opacity: 0; transform: translateY(10px) scale(0.99); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        @keyframes pulseValue { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes popupIn { from { opacity: 0; transform: translate(-50%, -50%) scale(0.94); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
+
+        .loading { display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(255, 255, 255, 0.3); border-radius: 50%; border-top-color: var(--accent-color); animation: spin 1s ease-in-out infinite; }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            :root { --sidebar-width: 0px; }
+            .main-content { margin-left: 0; }
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .menu-toggle { display: block; }
+            .theme-toggle { top: 15px; right: 15px; padding: 10px; }
+            .main-header { padding: 0 1.25rem; }
+        }
+        @media (max-width: 768px) {
+            .content-area { padding: 1rem; }
+            .section-title { font-size: 1.75rem; }
+            .section-header { text-align: left; margin-bottom: 1.25rem; }
+            .metrics-grid { grid-template-columns: 1fr; gap: 1rem; }
+            .card-content { padding: 1.25rem; }
+            .modal-content { width: 95%; padding: 1.25rem; margin: 1rem; }
+            .table-container { margin: 0 -1rem; width: calc(100% + 2rem); border-radius: 0; }
+            .table th, .table td { padding: 0.75rem; font-size: 0.9rem; }
+            .pagination-container { flex-direction: column; gap: 0.9rem; padding: 1rem; }
+            .pagination-controls { justify-content: center; flex-wrap: wrap; }
+            .pagination-controls .btn { min-width: 70px; padding: 0.5rem 0.75rem; font-size: 0.82rem; }
+            .pagination-pages { margin: 0; flex-wrap: wrap; justify-content: center; }
+            .page-number { min-width: 35px; padding: 0.4rem 0.6rem; font-size: 0.8rem; }
+            .pagination-info { text-align: center; font-size: 0.85rem; }
+            .pagination-size { justify-content: center; }
+            .modal-actions { flex-direction: column; }
+            .btn { justify-content: center; }
+            .user-profile span { display: none; }
+        }
+        @media (max-width: 480px) {
+            .content-area { padding: 0.75rem; }
+            .section-title { font-size: 1.5rem; }
+            .card-header { padding: 1.1rem 1.25rem; }
+            .card-title { font-size: 1.15rem; }
+            .btn { padding: 0.6rem 1.05rem; font-size: 0.85rem; }
+            .btn-sm { padding: 0.45rem 0.8rem; font-size: 0.78rem; }
+            .modal-title { font-size: 1.45rem; }
+            .metric-value { font-size: 1.85rem; }
+            .theme-toggle { top: 10px; right: 10px; padding: 8px; }
+            .main-header { height: 60px; padding: 0 0.75rem; }
+            .user-avatar { width: 32px; height: 32px; font-size: 0.9rem; }
+        }
+
+        @media print { .sidebar, .theme-toggle, .menu-toggle { display: none !important; } .main-content { margin-left: 0 !important; } .card { break-inside: avoid; box-shadow: none; border: 1px solid #000; } }
+        @media (prefers-contrast: high) { :root { --border-color: #000; --text-primary: #000; --background-color: #fff; } [data-theme="light"] { --border-color: #000; --text-primary: #000; } }
+        @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; } }
+
+        /* Utilities */
+        .hidden { display: none !important; }
+        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .mt-1 { margin-top: 0.5rem; }
+        .mt-2 { margin-top: 1rem; }
+        .mb-1 { margin-bottom: 0.5rem; }
+        .mb-2 { margin-bottom: 1rem; }
+        .flex { display: flex; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .gap-2 { gap: 1rem; }
+    </style>
+</head>
+<body>
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" id="themeToggle" title="Toggle theme" aria-label="Toggle between light and dark theme" aria-pressed="false">
+        <svg id="sunIcon" class="icon" width="20" height="20" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12z"/>
+        </svg>
+        <svg id="moonIcon" class="icon hidden" width="20" height="20" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M9.528 1.718a.75.75 0 01.162.819A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 003.463-.69.75.75 0 01.981.98 10.503 10.503 0 01-9.694 6.46c-5.799 0-10.5-4.701-10.5-10.5 0-4.368 2.667-8.112 6.46-9.694a.75.75 0 01.818.162z"/>
+        </svg>
+    </button>
+
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar" role="navigation" aria-label="Main navigation">
+            <div class="sidebar-header">
+                <h1>Super Admin</h1>
+                <p>Control Panel v2.0</p>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-item">
+                    <a href="#" class="nav-link active" data-section="users" role="menuitem">
+                        <svg class="nav-icon" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                        Manage Users
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" data-section="candidates" role="menuitem">
+                        <svg class="nav-icon" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 4c0-1.11.89-2 2-2s2 .89 2 2-.89 2-2 2-2-.89-2-2zM4 18v-1c0-2.66 5.33-4 8-4s8 1.34 8 4v1H4zM12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z"/></svg>
+                        Manage Candidates
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" data-section="import" role="menuitem">
+                        <svg class="nav-icon" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"/></svg>
+                        Import Data
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" data-section="logs" role="menuitem">
+                        <svg class="nav-icon" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+                        Audit Logs
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" data-section="analytics" role="menuitem">
+                        <svg class="nav-icon" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"/></svg>
+                        Analytics
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content" id="mainContent" role="main">
+            <!-- Header -->
+            <header class="main-header">
+                <div class="header-left">
+                    <button class="menu-toggle" id="menuToggle" aria-label="Toggle sidebar menu" aria-expanded="false">
+                        <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+                    </button>
+                    <h1 class="page-title" id="pageTitle">Manage Users</h1>
+                </div>
+                <div class="header-right">
+                    <div class="user-profile" tabindex="0" role="button" aria-label="User profile menu">
+                        <div class="user-avatar" aria-hidden="true">SA</div>
+                        <span>Super Admin</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Users Section -->
+                <section id="users" class="section active" role="tabpanel" aria-labelledby="users-title">
+                    <div class="section-header">
+                        <h2 class="section-title" id="users-title">User Management</h2>
+                        <p class="section-subtitle">Manage system users and their permissions with enhanced security controls</p>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="flex items-center justify-between">
+                                <h3 class="card-title">System Users</h3>
+                                <button class="btn btn-primary" id="create-user">
+                                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                                    Create New User
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="table-container">
+                                <table class="table" id="users-table" role="table" aria-label="System users table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">ID</th>
+                                            <th scope="col">Username</th>
+                                            <th scope="col">Email</th>
+                                            <th scope="col">Role</th>
+                                            <th scope="col">Status</th>
+                                            <th scope="col">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                            <div class="pagination-container" id="users-pagination">
+                                <div class="pagination-info"><span id="users-info">Showing 0 - 0 of 0 users</span></div>
+                                <div class="pagination-controls">
+                                    <button class="btn btn-sm btn-secondary" id="users-first-page" disabled>First</button>
+                                    <button class="btn btn-sm btn-secondary" id="users-prev-page" disabled>Previous</button>
+                                    <span class="pagination-pages" id="users-page-numbers"></span>
+                                    <button class="btn btn-sm btn-secondary" id="users-next-page" disabled>Next</button>
+                                    <button class="btn btn-sm btn-secondary" id="users-last-page" disabled>Last</button>
+                                </div>
+                                <div class="pagination-size">
+                                    <label for="users-page-size">Items per page:</label>
+                                    <select id="users-page-size" class="form-select">
+                                        <option value="10">10</option>
+                                        <option value="20" selected>20</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Candidates Section -->
+                <section id="candidates" class="section" role="tabpanel" aria-labelledby="candidates-title">
+                    <div class="section-header">
+                        <h2 class="section-title" id="candidates-title">Candidate Management</h2>
+                        <p class="section-subtitle">Manage candidate profiles, track applications, and maintain recruitment data</p>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="flex items-center justify-between">
+                                <h3 class="card-title">Candidates Database</h3>
+                                <button class="btn btn-primary" id="create-candidate">
+                                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                                    Add New Candidate
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="table-container">
+                                <table class="table" id="candidates-table" role="table" aria-label="Candidates database table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">ID</th>
+                                            <th scope="col">Name</th>
+                                            <th scope="col">Email</th>
+                                            <th scope="col">Phone</th>
+                                            <th scope="col">Skills</th>
+                                            <th scope="col">Experience</th>
+                                            <th scope="col">Source</th>
+                                            <th scope="col">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                            <div class="pagination-container" id="candidates-pagination">
+                                <div class="pagination-info"><span id="candidates-info">Showing 0 - 0 of 0 candidates</span></div>
+                                <div class="pagination-controls">
+                                    <button class="btn btn-sm btn-secondary" id="candidates-first-page" disabled>First</button>
+                                    <button class="btn btn-sm btn-secondary" id="candidates-prev-page" disabled>Previous</button>
+                                    <span class="pagination-pages" id="candidates-page-numbers"></span>
+                                    <button class="btn btn-sm btn-secondary" id="candidates-next-page" disabled>Next</button>
+                                    <button class="btn btn-sm btn-secondary" id="candidates-last-page" disabled>Last</button>
+                                </div>
+                                <div class="pagination-size">
+                                    <label for="candidates-page-size">Items per page:</label>
+                                    <select id="candidates-page-size" class="form-select">
+                                        <option value="10">10</option>
+                                        <option value="20" selected>20</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Import Section -->
+                <section id="import" class="section" role="tabpanel" aria-labelledby="import-title">
+                    <div class="section-header">
+                        <h2 class="section-title" id="import-title">Data Import</h2>
+                        <p class="section-subtitle">Import candidate data from various sources with enhanced validation and error handling</p>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Import Candidate Data</h3>
+                        </div>
+                        <div class="card-content">
+                            <form id="import-form" class="form" novalidate>
+                                <div class="form-group">
+                                    <label class="form-label" for="file-upload">Choose file (CSV, Excel, or Text):</label>
+                                    <input type="file" id="file-upload" class="form-input" accept=".csv,.xlsx,.xls,.txt" required aria-describedby="file-help">
+                                    <small id="file-help" class="sr-only">Supported formats: CSV, Excel (.xlsx, .xls), or Text (.txt)</small>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="source">Source:</label>
+                                    <select id="source" class="form-select" required aria-describedby="source-help">
+                                        <option value="">Select a source</option>
+                                        <option value="naukri">Naukri</option>
+                                        <option value="linkedin">LinkedIn</option>
+                                        <option value="indeed">Indeed</option>
+                                    </select>
+                                    <small id="source-help" class="sr-only">Select the platform where the data originated</small>
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"/></svg>
+                                    <span class="loading hidden" aria-hidden="true"></span>
+                                    Import Data
+                                </button>
+                            </form>
+                            <div id="import-status" class="mt-2" role="status" aria-live="polite"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Logs Section -->
+                <section id="logs" class="section" role="tabpanel" aria-labelledby="logs-title">
+                    <div class="section-header">
+                        <h2 class="section-title" id="logs-title">Audit Logs</h2>
+                        <p class="section-subtitle">Monitor system activities and user actions with advanced filtering and search capabilities</p>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="flex items-center justify-between">
+                                <h3 class="card-title">System Activity Logs</h3>
+                                <div class="flex items-center gap-2">
+                                    <label for="date-from" class="sr-only">Filter from date</label>
+                                    <input type="date" id="date-from" class="form-input" aria-label="Filter from date">
+                                    <span aria-hidden="true">to</span>
+                                    <label for="date-to" class="sr-only">Filter to date</label>
+                                    <input type="date" id="date-to" class="form-input" aria-label="Filter to date">
+                                    <button id="filter-logs" class="btn btn-secondary">
+                                        <span class="loading hidden" aria-hidden="true"></span>
+                                        Filter
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="table-container">
+                                <table class="table" id="logs-table" role="table" aria-label="System activity logs">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Timestamp</th>
+                                            <th scope="col">User</th>
+                                            <th scope="col">Action</th>
+                                            <th scope="col">Details</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Analytics Section -->
+                <section id="analytics" class="section" role="tabpanel" aria-labelledby="analytics-title">
+                    <div class="section-header">
+                        <h2 class="section-title" id="analytics-title">System Analytics</h2>
+                        <p class="section-subtitle">Comprehensive overview of system performance, usage metrics, and key insights</p>
+                    </div>
+
+                    <div class="metrics-grid">
+                        <div class="metric-card" id="total-users">
+                            <div class="metric-value" aria-label="Total users count">0</div>
+                            <div class="metric-label">Total Users</div>
+                        </div>
+                        <div class="metric-card" id="active-users">
+                            <div class="metric-value" aria-label="Active users count">0</div>
+                            <div class="metric-label">Active Users</div>
+                        </div>
+                        <div class="metric-card" id="total-candidates">
+                            <div class="metric-value" aria-label="Total candidates count">0</div>
+                            <div class="metric-label">Total Candidates</div>
+                        </div>
+                        <div class="metric-card" id="imports-last-30-days">
+                            <div class="metric-value" aria-label="Imports in last 30 days">0</div>
+                            <div class="metric-label">Imports (Last 30 Days)</div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Performance Overview</h3>
+                        </div>
+                        <div class="card-content">
+                            <div id="chart-container" class="chart-container" role="img" aria-label="Performance charts placeholder">
+                                <div>
+                                    <svg width="64" height="64" fill="var(--accent-color)" viewBox="0 0 24 24" style="margin-bottom: 1rem;" aria-hidden="true"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"/></svg>
+                                    <p>📊 Charts will be rendered here when connected to real data</p>
+                                    <p style="font-size: 0.875rem; opacity: 0.7;">Connect your analytics service to see detailed charts and graphs</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>
