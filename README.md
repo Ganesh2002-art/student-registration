@@ -45,3 +45,12 @@ git clone https://github.com/your-username/student-registration.git
 cd student-registration
 npm install
 npm start
+
+```
+
+## Admin Panel Demo
+
+- A standalone admin demo page is available at `public/admin.html` with refined light/dark themes and accessible contrast.
+- When running the dev server, open `http://localhost:3000/admin.html` directly.
+- The theme toggle remembers your choice (stored in `localStorage` under `ui.theme`).
+- Colors are tuned for WCAG-friendly contrast and balanced in both themes.
